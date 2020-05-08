@@ -1,0 +1,32 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="new-background-color">
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>
+      {{name}}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button>
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding [fullscreen]="true" overflow-scroll=true>
+  <div class="message-container">
+    <div *ngFor="let message of chats" class="{{message.styleClass}}">
+      <h5 class="hour">{{message?.time | date: "shortTime"}}</h5>
+      <p class="{{message.styleClass}}-bubble">{{message.msgStr}}</p>
+    </div>
+  </div>
+</ion-content>
+
+
+<ion-footer>
+  <ion-item>
+    <ion-input type="text" [(ngModel)]="chat_input" placeholder="Type a message.."></ion-input>
+    <ion-icon name="send" (click)="send(chat_input)" (mousedown)="$event.preventDefault()" item-right></ion-icon>
+  </ion-item>
+</ion-footer>

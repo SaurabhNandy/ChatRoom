@@ -1,0 +1,133 @@
+<ion-header [translucent]="true">
+  <ion-toolbar *ngIf="!search_bar" class="new-background-color">
+    <ion-title>
+      <ion-icon name="chatbubbles-outline"></ion-icon> ChatRoom
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="showSearchBar()">
+        <ion-icon name="search"></ion-icon>
+      </ion-button>
+      <ion-button (click)="presentPopover($event)">
+        <ion-icon name="ellipsis-vertical"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  <ion-toolbar *ngIf="search_bar" class="new-background-color">
+    <ion-searchbar showCancelButton="always" [(ngModel)]="searchQuery" (ionCancel)="hideSearchBar()" (search)="searchEverything()" animated></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content padding [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshRecents($event)">
+    <ion-refresher-content pullingIcon="lines"></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="search_content">
+    <ion-list no-padding *ngIf="recents_search.length>0">
+      <div class="ion-text-start gray-bg">CHATS</div>
+      <ion-item *ngFor="let recent of recents_search" class="ion-activatable" [routerLink]="['/chat']" [queryParams]="{email: recent.email, name: recent.name, avatar: recent.avatar}">
+        <ion-avatar class="chatImage" slot="start">
+          <ion-img [src]="recent?.avatar"></ion-img>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-avatar>
+        <ion-label>
+          <div class="withcount">
+            <div class="nameAvatar">
+              <h2 color="text-height"><strong>{{recent?.name}}</strong></h2>
+              <ion-avatar class="chatCount" *ngIf="chats[recent.email]?.unread>0">{{chats[recent.email].unread}}</ion-avatar>
+            </div>
+            
+            <div class="timeEnd">
+              <ion-text slot="end" color="dark">{{chats[recent.email]?.lastchat_time | date: "shortTime"}}</ion-text>
+            </div>
+          </div>
+          <ion-icon name="checkmark-sharp" size="small" *ngIf="chats[recent.email]?.sent_by_me" class="icon" item-start></ion-icon><p class="text text-height"> {{chats[recent.email]?.lastchat}}</p>
+        </ion-label>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-item>
+    </ion-list>
+
+    <ion-list no-padding *ngIf="contacts_search.length>0">
+      <div class="ion-text-start gray-bg">CONTACTS</div>
+      <ion-item *ngFor="let contact of contacts_search" class="ion-activatable" [routerLink]="['/chat']" [queryParams]="{email: contact.email, name: contact.name, avatar: contact.avatar}" lines="full">
+        <ion-avatar slot="start">
+          <img [src]="contact?.avatar"/>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-avatar>
+        <ion-label class="ion-text-wrap">
+          <h2 class="text-height">
+            <strong>{{ contact?.name }}</strong>
+          </h2>
+          <p class="text-height">{{ contact?.email }}</p>
+        </ion-label>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-item>
+    </ion-list>
+
+    <ion-list no-padding *ngIf="others_search.length>0">
+      <div class="ion-text-start gray-bg">MESSAGES</div>
+      <ion-item *ngFor="let recent of others_search" class="ion-activatable" [routerLink]="['/chat']" [queryParams]="{email: recent[0]?.email, name: recent[0]?.name, avatar: recent[0]?.avatar}">
+        <ion-avatar class="chatImage" slot="start">
+          <ion-img [src]="recent[0]?.avatar"></ion-img>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-avatar>
+        <ion-label>
+          <div class="withcount">
+            <div class="nameAvatar">
+              <h2 color="text-height"><strong>{{recent[0]?.name}}</strong></h2>
+              <ion-avatar class="chatCount" *ngIf="chats[recent.email]?.unread>0">{{chats[recent[0]?.email].unread}}</ion-avatar>
+            </div>
+            
+            <div class="timeEnd">
+              <ion-text slot="end" color="dark">{{recent[2] | date: "shortTime"}}</ion-text>
+            </div>
+          </div>
+          <p class="text text-height"> {{recent[1]}}</p>
+        </ion-label>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <div *ngIf="!search_content">
+  <ion-list no-padding *ngIf="recents.length>0">
+    <ion-item *ngFor="let contact of recents" class="ion-activatable" [routerLink]="['/chat']" [queryParams]="{email: contact.email, name: contact.name, avatar: contact.avatar}">
+      <ion-avatar class="chatImage" slot="start">
+        <ion-img [src]="contact?.avatar"></ion-img>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-avatar>
+      <ion-label>
+        <div class="withcount">
+          <div class="nameAvatar">
+            <h2 color="text-height"><strong>{{contact?.name}}</strong></h2>
+            <ion-avatar class="chatCount" *ngIf="chats[contact.email]?.unread>0">{{chats[contact.email].unread}}</ion-avatar>
+          </div>
+          
+          <div class="timeEnd">
+            <ion-text slot="end" color="dark">{{chats[contact.email]?.lastchat_time | date: "shortTime"}}</ion-text>
+          </div>
+        </div>
+        <ion-icon name="checkmark-sharp" size="small" *ngIf="chats[contact.email]?.sent_by_me" class="icon" item-start></ion-icon><p class="text text-height"> {{chats[contact.email]?.lastchat}}</p>
+        
+      </ion-label>
+      <ion-ripple-effect></ion-ripple-effect>
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="recents.length<=0"><h3 [innerHTML]="message" class="ion-text-center gray ion-margin" padding></h3></div>
+  </div>
+
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button class="new-background-color" (click)="presentAddContactModal()">
+      <ion-icon color="light" name="person-add"></ion-icon>
+    </ion-fab-button>
+    <br>
+    <ion-fab-button class="new-background-color" (click)="presentContactModal()">
+      <ion-icon color="light" name="chatbox-ellipses"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+  
+</ion-content>
+
+
+

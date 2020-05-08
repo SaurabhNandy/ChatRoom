@@ -1,0 +1,53 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="new-background-color">
+    <ion-title>
+      <ion-icon name="chatbubbles-outline"></ion-icon> ChatRoom
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding	ion-margin">
+  <div class="ion-text-center" >
+    <h3>Add Contact</h3>
+  </div>
+  <form>
+    <ion-item>
+      <ion-label position="fixed" color="dark">User email</ion-label>
+      <ion-input [(ngModel)]="contact_email" name="contact_email" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="fixed" color="dark">Nickname</ion-label>
+      <ion-input [(ngModel)]="contact_nickname" name="contact_nickname" required></ion-input>
+    </ion-item>
+
+    <ion-row>
+      <ion-col>
+        <br>
+        <ion-button color="primary" expand="block" (click)="addToContacts()">Add to contact</ion-button>
+      </ion-col>
+    </ion-row>
+
+    <br>
+    <ion-list class="margin-bottom ion-no-padding">
+      <ion-item *ngFor="let contact of new_contact_list" class="ion-activatable" (click)="gotoChat(contact.email, contact.name, contact.avatar)" lines="full">
+        <ion-avatar slot="start">
+          <img [src]="contact?.avatar"/>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-avatar>
+        <ion-label class="ion-text-wrap">
+          <h2 class="text-height">
+            <strong>{{ contact?.name }}</strong>
+          </h2>
+          <p class="text-height">{{ contact?.email }}</p>
+        </ion-label>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-item>
+    </ion-list>
+  </form>
+  
+  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
+    <ion-fab-button class="new-background-color" (click)="dismissModal()">
+      <ion-icon color="light" name="close-circle-sharp"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+</ion-content>

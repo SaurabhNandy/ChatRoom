@@ -1,0 +1,32 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="new-background-color">
+    <ion-title>
+      <ion-icon name="chatbubbles-outline"></ion-icon> ChatRoom
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding	ion-margin">
+  <div class="ion-text-center" >
+    <h3>Sign In to ChatRoom</h3>
+  </div>
+  <form>
+    <ion-item lines="full" >
+      <ion-label position="floating" >Email</ion-label>
+      <ion-input type="email" [(ngModel)]="email" name="email" required></ion-input>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Password</ion-label> 
+        <ion-input type="password" name="password" [(ngModel)]="password" required></ion-input>  
+    </ion-item>
+
+    <br>
+    <ion-row>
+      <ion-col>
+        <ion-button color="primary" expand="block" (click)="login()" class="margin-bottom">Sign In</ion-button>
+        <ion-button color="danger" [routerLink]="['/register']" expand="block" class="margin-bottom">New User? Register -></ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</ion-content>

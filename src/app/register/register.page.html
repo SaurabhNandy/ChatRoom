@@ -1,0 +1,42 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="new-background-color">
+    <ion-title>
+      <ion-icon name="chatbubbles-outline"></ion-icon> ChatRoom
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding	ion-margin">
+  <div class="ion-text-center" >
+    <h3>Register to ChatRoom</h3>
+  </div>
+  <form>
+    <ion-item lines="full" >
+      <ion-label position="floating" >Email</ion-label>
+      <ion-input type="email" name="email" [(ngModel)]="email" [disabled]="other_disabled" required></ion-input>
+    </ion-item>
+
+    <ion-item lines="full" >
+      <ion-label position="floating" >Username</ion-label>
+      <ion-input type="text" name="username" [(ngModel)]="username" [disabled]="other_disabled"></ion-input>
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-label position="floating">Password</ion-label> 
+        <ion-input type="password" name="password" [(ngModel)]="password" [disabled]="other_disabled" required></ion-input>  
+    </ion-item>
+
+    <ion-item lines="full">
+      <ion-label position="floating">OTP</ion-label> 
+        <ion-input type="number" name="otp" [(ngModel)]="otp" [disabled]="otp_disabled" inputmode="numeric" maxlength="6" minlength="6" required></ion-input>  
+    </ion-item>
+
+    <br>
+    <ion-row>
+      <ion-col>
+        <ion-button color="primary" expand="block" (click)="submit()" class="margin-bottom">{{submit_btn}}</ion-button>
+        <ion-button color="danger" [routerLink]="['/login']" expand="block" class="margin-bottom">Already a User? Login -></ion-button>
+      </ion-col>
+    </ion-row>
+  </form>
+</ion-content>
