@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { SocketService } from '../socket.service';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
 import { Storage } from '@ionic/storage';
-import { ModalController, LoadingController, AlertController, PopoverController, ToastController } from '@ionic/angular';
+import { ModalController, LoadingController, AlertController, PopoverController, ToastController, Platform } from '@ionic/angular';
 import { NewcontactPage } from '../newcontact/newcontact.page';
 import { AddcontactPage } from '../addcontact/addcontact.page';
 import { HomepopoverComponent } from '../homepopover/homepopover.component';
@@ -26,60 +26,104 @@ export class HomePage{
   contacts_search = [];
   others_search = [];
   message = 'No recent chats.<br> Press the message icon to start a new chat';
+  search_message = 'No results...';
   recentChangeEventSubscription: any;
+  backButtonSubscription: any;
+  routerEvent: any;
+  connect_error = false;
+  loader: any;
   
-  constructor(public socket: SocketService, private router: Router, private storage: Storage, public modalController: ModalController, public loadingController: LoadingController, public alertController: AlertController, private popoverController: PopoverController, public toastController: ToastController){
+  constructor(public socket: SocketService, private router: Router, private storage: Storage, public platform: Platform, public modalController: ModalController, public loadingController: LoadingController, public alertController: AlertController, private popoverController: PopoverController, public toastController: ToastController){
     this.count = 0;
-    //this.recents = this.socket.recents;
     this.search_bar = false;
     this.search_content = false;
-    this.storage.get('chatroom-user-token').then((val) => {
-      console.log('Your age is', val);
+    storage.get('chatroom-user-token').then((val) => {
       if(val){
-        this.socket.token = val;
+        socket.token = val;
         this.count = 2;
         this.getMsg();
       }
       else{
-        this.router.navigateByUrl('login');
+        router.navigateByUrl('login', { replaceUrl: true });
       }
-    });    
+    });
+
+    this.routerEvent = router.events.subscribe(event => {
+      if (event instanceof NavigationEnd && event.url==='/home') {
+        if(this.count==1 || this.socket.count==1){
+          this.startHomePage();
+        }
+        this.count++;
+      }
+    });   
+
+    this.socket.io.on('connect_error',()=> {
+      if(!this.connect_error){
+        if(this.loader){
+          this.loader.dismiss();
+        }
+        this.presentAlert('Message','An error occurred while trying to establish a connection!<br>Please check your internet connection or restart app again');
+        this.connect_error = true;
+      }
+    });
+    this.socket.io.on('reconnect', (attemptNumber) => {
+      this.connect_error = false;
+    });
   }
 
-  ionViewWillEnter(){
-    if(this.count==1){
-      this.storage.get('chatroom-user-token').then((val) => {
-        if(val){
-          this.socket.token = val;
-          this.getMsg();
-        }
-        else{
-          this.router.navigateByUrl('login');
-        }
-      });
-    }
-    this.count++;
+  ngOnDestroy(){
+    this.routerEvent.unsubscribe();
   }
 
-  getMsg(){
-    this.presentLoading();
-    this.socket.io.emit('start-connection',{token: this.socket.token}, (data)=>{
-      console.log(data);
-      if(data.status){
-        this.socket.email = data.value;
-        this.socket.getRecents();
-        this.recents = this.socket.recents;     
-        this.socket.listenForMessages();  
-        this.recentChangeEventSubscription = this.socket.recentsChangeEvent.subscribe(value=>{
-          this.recents = this.socket.recents;
-          this.chats = this.socket.chats;
-        });
-        this.chats = this.socket.chats;
+  startHomePage(){
+    this.socket.count = 0;
+    this.storage.get('chatroom-user-token').then((val) => {
+      if(val){
+        this.socket.token = val;
+        this.getMsg();
       }
       else{
-        this.presentToast('Invalid credentials found. Please logout from any other device');
-        this.router.navigateByUrl('login');
+        this.router.navigateByUrl('login', { replaceUrl: true });
       }
+    });
+  }
+
+  contact(){
+    this.backButtonSubscription = this.platform.backButton.subscribe(async () => {
+      navigator['app'].exitApp();
+    }); 
+  }
+
+  ionViewDidLeave() {
+    if(this.backButtonSubscription){
+      this.backButtonSubscription.unsubscribe();
+    }
+  }
+
+  async getMsg(){
+    this.loader = await this.loadingController.create({
+      spinner: "bubbles",
+      message: 'Please wait...'
+    });
+    this.loader.present().then(()=>{
+      this.socket.io.emit('start-connection',{token: this.socket.token}, (data)=>{
+        if(data.status){
+          this.socket.email = data.email;
+          this.socket.avatar = data.avatar;
+          this.socket.getRecents();   
+          this.socket.listenForMessages(); 
+          this.recentChangeEventSubscription = this.socket.recentsChangeEvent.subscribe(value=>{
+            this.recents = this.socket.recents;
+            this.chats = this.socket.chats;
+            this.loader.dismiss();
+          });
+        }
+        else{
+          this.loader.dismiss();
+          this.presentToast('Invalid credentials found. Please logout from any other device');
+          //this.router.navigateByUrl('login', { replaceUrl: true });
+        }
+      });
     });
   }
 
@@ -117,7 +161,7 @@ export class HomePage{
     const loading = await this.loadingController.create({
       spinner: "bubbles",
       message: 'Please wait...',
-      duration: 2000
+      duration: 1000
     });
     await loading.present();
   }
@@ -127,6 +171,7 @@ export class HomePage{
   }
 
   hideSearchBar(){
+    this.searchQuery = '';
     this.search_bar = false;
     this.search_content = false;
     this.recents_search = [];
@@ -143,18 +188,6 @@ export class HomePage{
     }
   }
 
-  /*
-  ngOnDestroy(){
-    this.socket.saveChats();
-  }
-  */
-
-  refreshRecents(event){
-    setTimeout(() => {
-      event.target.complete();
-    }, 2000);
-  }
-
   async presentContactModal() {
     const modal = await this.modalController.create({
       component: NewcontactPage,
@@ -169,5 +202,13 @@ export class HomePage{
       animated: true
     });
     return await modal.present();
+  }
+
+  refreshRecents(event){
+    this.socket.refreshRecentsSocket();
+    setTimeout(()=>{
+      event.target.complete();
+    },1000);
+   
   }
 }

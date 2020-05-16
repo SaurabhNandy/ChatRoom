@@ -19,16 +19,14 @@
 
 <ion-content padding [fullscreen]="true">
   <ion-refresher slot="fixed" (ionRefresh)="refreshRecents($event)">
-    <ion-refresher-content pullingIcon="lines"></ion-refresher-content>
+    <ion-refresher-content pullingIcon="bubbles" refreshingSpinner="bubbles" pullingText="Pull to refresh" refreshingText="Refreshing..." pullFactor="1.5"></ion-refresher-content>
   </ion-refresher>
-
   <div *ngIf="search_content">
     <ion-list no-padding *ngIf="recents_search.length>0">
-      <div class="ion-text-start gray-bg">CHATS</div>
+      <div class="ion-text-start gray-bg">RECENTS</div>
       <ion-item *ngFor="let recent of recents_search" class="ion-activatable" [routerLink]="['/chat']" [queryParams]="{email: recent.email, name: recent.name, avatar: recent.avatar}">
         <ion-avatar class="chatImage" slot="start">
-          <ion-img [src]="recent?.avatar"></ion-img>
-          <ion-ripple-effect></ion-ripple-effect>
+          <ion-img [src]="recent?.avatar"></ion-img> 
         </ion-avatar>
         <ion-label>
           <div class="withcount">
@@ -50,8 +48,8 @@
     <ion-list no-padding *ngIf="contacts_search.length>0">
       <div class="ion-text-start gray-bg">CONTACTS</div>
       <ion-item *ngFor="let contact of contacts_search" class="ion-activatable" [routerLink]="['/chat']" [queryParams]="{email: contact.email, name: contact.name, avatar: contact.avatar}" lines="full">
-        <ion-avatar slot="start">
-          <img [src]="contact?.avatar"/>
+        <ion-avatar class="chatImage" slot="start">
+          <ion-img [src]="contact?.avatar"></ion-img>
           <ion-ripple-effect></ion-ripple-effect>
         </ion-avatar>
         <ion-label class="ion-text-wrap">
@@ -66,8 +64,8 @@
 
     <ion-list no-padding *ngIf="others_search.length>0">
       <div class="ion-text-start gray-bg">MESSAGES</div>
-      <ion-item *ngFor="let recent of others_search" class="ion-activatable" [routerLink]="['/chat']" [queryParams]="{email: recent[0]?.email, name: recent[0]?.name, avatar: recent[0]?.avatar}">
-        <ion-avatar class="chatImage" slot="start">
+      <ion-item *ngFor="let recent of others_search" class="ion-activatable" [routerLink]="['/chat']" [queryParams]="{email: recent[0]?.email, name: recent[0]?.name, avatar: recent[0]?.avatar, scrollTo: recent[2]}">
+        <ion-avatar class="chatImage" class="chatImage" slot="start">
           <ion-img [src]="recent[0]?.avatar"></ion-img>
           <ion-ripple-effect></ion-ripple-effect>
         </ion-avatar>
@@ -87,34 +85,36 @@
         <ion-ripple-effect></ion-ripple-effect>
       </ion-item>
     </ion-list>
+    <div *ngIf="others_search.length<=0 && recents_search.length<=0 && contacts_search.length<=0"><h3 [innerHTML]="search_message" class="ion-text-center gray ion-margin" padding></h3></div>
   </div>
 
   <div *ngIf="!search_content">
-  <ion-list no-padding *ngIf="recents.length>0">
-    <ion-item *ngFor="let contact of recents" class="ion-activatable" [routerLink]="['/chat']" [queryParams]="{email: contact.email, name: contact.name, avatar: contact.avatar}">
-      <ion-avatar class="chatImage" slot="start">
-        <ion-img [src]="contact?.avatar"></ion-img>
-        <ion-ripple-effect></ion-ripple-effect>
-      </ion-avatar>
-      <ion-label>
-        <div class="withcount">
-          <div class="nameAvatar">
-            <h2 color="text-height"><strong>{{contact?.name}}</strong></h2>
-            <ion-avatar class="chatCount" *ngIf="chats[contact.email]?.unread>0">{{chats[contact.email].unread}}</ion-avatar>
+    
+    <ion-list no-padding *ngIf="recents.length>0">
+      <ion-item *ngFor="let contact of recents" class="ion-activatable" [routerLink]="['/chat']" [queryParams]="{email: contact.email, name: contact.name, avatar: contact.avatar}">
+        <ion-avatar class="chatImage" slot="start">
+          <ion-img [src]="contact?.avatar"></ion-img>
+          <ion-ripple-effect></ion-ripple-effect>
+        </ion-avatar>
+        <ion-label>
+          <div class="withcount">
+            <div class="nameAvatar">
+              <h2 color="text-height"><strong>{{contact?.name}}</strong></h2>
+              <ion-avatar class="chatCount" *ngIf="chats[contact.email]?.unread>0">{{chats[contact.email].unread}}</ion-avatar>
+            </div>
+            
+            <div class="timeEnd">
+              <ion-text slot="end" color="dark">{{chats[contact.email]?.lastchat_time | date: "shortTime"}}</ion-text>
+            </div>
           </div>
+          <ion-icon name="checkmark-sharp" size="small" *ngIf="chats[contact.email]?.sent_by_me" class="icon" item-start></ion-icon><p class="text text-height"> {{chats[contact.email]?.lastchat}}</p>
           
-          <div class="timeEnd">
-            <ion-text slot="end" color="dark">{{chats[contact.email]?.lastchat_time | date: "shortTime"}}</ion-text>
-          </div>
-        </div>
-        <ion-icon name="checkmark-sharp" size="small" *ngIf="chats[contact.email]?.sent_by_me" class="icon" item-start></ion-icon><p class="text text-height"> {{chats[contact.email]?.lastchat}}</p>
-        
-      </ion-label>
-      <ion-ripple-effect></ion-ripple-effect>
-    </ion-item>
-  </ion-list>
+        </ion-label>
+        <ion-ripple-effect></ion-ripple-effect>
+      </ion-item>
+    </ion-list>
 
-  <div *ngIf="recents.length<=0"><h3 [innerHTML]="message" class="ion-text-center gray ion-margin" padding></h3></div>
+    <div *ngIf="recents.length<=0"><h3 [innerHTML]="message" class="ion-text-center gray ion-margin" padding></h3></div>
   </div>
 
   <ion-fab vertical="bottom" horizontal="end" slot="fixed">

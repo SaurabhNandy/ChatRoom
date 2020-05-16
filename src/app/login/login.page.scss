@@ -2,6 +2,15 @@
     --background: #494dbf;
     color: #fff;
 }
+ion-toolbar{
+    border: 1px solid black !important;
+}
+ion-button{
+    --background: #494dbf;
+    --border-width: 1px;
+    --border-style: solid;
+    --border-color: black;
+}
 .margin-bottom{
     margin-bottom: 5px;
 }

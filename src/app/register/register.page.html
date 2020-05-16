@@ -6,7 +6,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding	ion-margin">
+<ion-content class="ion-padding	ion-margin" overflow-scroll="true" scroll="true">
   <div class="ion-text-center" >
     <h3>Register to ChatRoom</h3>
   </div>
@@ -34,8 +34,8 @@
     <br>
     <ion-row>
       <ion-col>
-        <ion-button color="primary" expand="block" (click)="submit()" class="margin-bottom">{{submit_btn}}</ion-button>
-        <ion-button color="danger" [routerLink]="['/login']" expand="block" class="margin-bottom">Already a User? Login -></ion-button>
+        <ion-button expand="block" (click)="submit()" class="margin-bottom">{{submit_btn}}</ion-button>
+        <ion-button color="danger" [routerLink]="['/login']" [replaceUrl]=true expand="block" class="margin-bottom">Already a User? Login -></ion-button>
       </ion-col>
     </ion-row>
   </form>

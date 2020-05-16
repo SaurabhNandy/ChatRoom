@@ -25,9 +25,8 @@ export class NewcontactPage{
     }
   }
 
-  gotoChat(email, name, avatar){
+  gotoChat(){
     this.dismissModal();
-    this.router.navigate(['/chat'], { queryParams: {email: email, name: name, avatar: avatar}});
   }
 
   dismissModal(){

@@ -11,3 +11,12 @@
 .gray{
     color: #635f5f;
 }
+ion-toolbar{
+    border: 1px solid black !important;
+}
+ion-button, ion-fab-button{
+    --background: #494dbf;
+    --border-width: 1px;
+    --border-style: solid;
+    --border-color: black;
+}

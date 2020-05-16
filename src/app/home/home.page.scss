@@ -6,6 +6,9 @@ $background: #F7F7F7;
   font-weight: 500;
   color: #ffffff;
 }
+ion-toolbar{
+  border: 1px solid black !important;
+}
 .gray{
   color: #635f5f;
 }
@@ -38,7 +41,7 @@ $background: #F7F7F7;
   align-items: center;
   width: 75%;
   h2{
-    max-width: 70%;
+    max-width: 85%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -53,7 +56,7 @@ $background: #F7F7F7;
   vertical-align: middle;
   padding-right: 5px;
 }
-.text{
+.text-height{
   display: inline-block;
   vertical-align: middle;
   width:80%;
@@ -66,4 +69,12 @@ $background: #F7F7F7;
   color: #000;
   padding:3px;
   padding-left:10px;
+}
+ion-avatar{
+  border: 1px solid black !important;
+}
+ion-fab-button{
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: black;
 }

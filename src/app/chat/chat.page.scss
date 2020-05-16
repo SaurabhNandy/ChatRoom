@@ -1,7 +1,7 @@
 $background: #F7F7F7;
 
-.toolbar-background {
-  background-color: #30adde;
+ion-toolbar{
+  border: 1px solid black !important;
 }
 .toolbar-title-md {
   padding: 0 12px;
@@ -9,63 +9,6 @@ $background: #F7F7F7;
   font-weight: 500;
   color: #ffffff;
 }
-/*
-.chat-message {
-  border-radius: 5px;
-  display: block;
-  padding: 10px 18px;
-  position: relative;
-  margin-left: 10px;
-  margin-right: 10px;
-  max-width: 80%;
-  margin-bottom: 10px;
-}
-.chat-message:before {
-  content: "\00a0";
-  display: block;
-  height: 16px;
-  width: 9px;
-  position: absolute;
-  bottom: -7.5px;
-}
-.chat-message.right {
-  background-color: #488aff;
-  color: #fff;
-  float: right;
-}
-.chat-message.right:before {
-  background-color: #488aff;
-  right: 10px;
-  -webkit-transform: rotate(118deg) skew(-5deg);
-  transform: rotate(118deg) skew(-5deg);
-}
-.chat-message.left {
-  background-color: #e6e5eb;
-  float: left;
-}
-.chat-message.left:before {
-  background-color: #e6e5eb;
-  left: 10px;
-  -webkit-transform: rotate(70deg) skew(5deg);
-  transform: rotate(70deg) skew(5deg);
-}
-.new-background-color{
-  --background: #494dbf;
-  color: #fff;
-}
-.time{
-  border-radius: 5px;
-  display: block;
-  padding: 10px 18px;
-  position: relative;
-  margin-left: 10px;
-  margin-right: 10px;
-  max-width: 80%;
-  margin-bottom: 20px;
-  font-size:15px;
-}
-*/
-
 .new-background-color{
   --background: #494dbf;
   color: #fff;
@@ -90,6 +33,19 @@ $background: #F7F7F7;
   flex-direction: column;
   align-items: flex-end;
 }
+h3 {
+  color: #6d7075;
+  border-bottom: 1px solid #6d7075;
+  text-align: center;
+  line-height: 0.1rem;
+  margin: 20px 0px;
+  font-size: 1rem;
+  span {
+    padding: 0 15px;
+    background-color: #ffffff;
+  }
+}
+  
 .received p:before {
   content: "";
   position: absolute;
@@ -136,4 +92,26 @@ $background: #F7F7F7;
   margin-bottom: 0px;
   margin-top: 5px;
   color: #6d7075;
+}
+.avatar-toolbar{
+  border-radius: 50% !important;
+  border: 1px solid black;
+  margin-top: 5px;
+  margin-right: 10px;
+  background-color: blanchedalmond;
+}
+ion-title{
+  padding-inline-start: 0px;
+  padding-top: 10px;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0.0125em;
+  span{
+    font-size: 15px;
+    margin-bottom: 5px;
+  }
+}
+
+ion-textarea{
+  width: 70%;
 }

@@ -23,13 +23,13 @@
     <ion-row>
       <ion-col>
         <br>
-        <ion-button color="primary" expand="block" (click)="addToContacts()">Add to contact</ion-button>
+        <ion-button expand="block" (click)="addToContacts()">Add to contact</ion-button>
       </ion-col>
     </ion-row>
 
     <br>
     <ion-list class="margin-bottom ion-no-padding">
-      <ion-item *ngFor="let contact of new_contact_list" class="ion-activatable" (click)="gotoChat(contact.email, contact.name, contact.avatar)" lines="full">
+      <ion-item *ngFor="let contact of new_contact_list" class="ion-activatable" (click)="gotoChat()" [routerLink]="['/chat']" [queryParams]="{email: contact.email, name: contact.name, avatar: contact.avatar}" [replaceUrl]=true lines="full">
         <ion-avatar slot="start">
           <img [src]="contact?.avatar"/>
           <ion-ripple-effect></ion-ripple-effect>

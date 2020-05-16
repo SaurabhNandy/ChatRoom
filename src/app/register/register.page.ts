@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { SocketService } from '../socket.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, Platform } from '@ionic/angular';
 import { Router } from '@angular/router';
 import * as CryptoJS from 'crypto-js';
 
@@ -13,19 +13,34 @@ export class RegisterPage{
 
   otp_disabled = true;
   other_disabled = false;
+  icon_options = ['identicon', 'monsterid', 'wavatar', 'robohash'];
   username = '';
   email = '';
   password = '';
   otp: number; 
   submit_btn = 'Send OTP';
   connect_error = false;
-  constructor(public socket:SocketService, public alertController: AlertController, private router: Router) { 
+  backButtonSubscription: any;
+  constructor(public socket:SocketService, public platform: Platform, private router: Router, public alertController: AlertController) { 
     this.socket.io.on('connect_error',()=> {
       if(!this.connect_error){
         this.presentAlert('Message','An error occurred while trying to establish a connection!<br>Please check your internet connection or restart app again');
         this.connect_error = true;
       }
-   });
+    });
+    this.socket.io.on('reconnect', (attemptNumber) => {
+      this.connect_error = false;
+    });
+  }
+
+  ionViewDidEnter(){
+    this.backButtonSubscription = this.platform.backButton.subscribe(async () => {
+      navigator['app'].exitApp();
+    }); 
+  }
+
+  ionViewDidLeave() {
+    this.backButtonSubscription.unsubscribe();
   }
 
   async presentAlert(header, message) {
@@ -44,7 +59,8 @@ export class RegisterPage{
     if(this.submit_btn=='Send OTP'){
       if(this.email.length>0 && this.password.length>0){
         var hash = CryptoJS.SHA512(this.email+'|'+this.password).toString(CryptoJS.enc.Base64);
-        this.socket.io.emit('otp', {"username":this.username, "email":this.email, "password":hash},(data)=>{
+        let avatar = "https://www.gravatar.com/avatar/" + CryptoJS.MD5(this.email).toString(CryptoJS.enc.Hex) + "?d=" + this.icon_options[Math.floor(Math.random() * this.icon_options.length)];
+        this.socket.io.emit('otp', {"username":this.username, "email":this.email, "password":hash, "avatar":avatar},(data)=>{
           if(data.status){
             this.presentAlert('Message', data.value);
             this.submit_btn = 'Register';
@@ -61,10 +77,10 @@ export class RegisterPage{
       } 
     }
     else{
-      if(this.otp.toString().length==6){
+      if(this.otp){
         this.socket.io.emit('register-user',{"email":this.email, "otp":this.otp}, (data)=>{
           if(data.status){
-            this.router.navigateByUrl('login');
+            this.router.navigateByUrl('login', { replaceUrl: true });
           }
           else{
             this.presentAlert('Error',data.value);

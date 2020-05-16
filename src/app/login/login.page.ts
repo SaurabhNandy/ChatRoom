@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { SocketService } from '../socket.service';
-import { AlertController } from '@ionic/angular';
+import { AlertController, Platform } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { Router } from '@angular/router';
 import * as CryptoJS from 'crypto-js';
@@ -16,18 +16,27 @@ export class LoginPage{
   email = '';
   password = '';
   connect_error = false;
-  constructor(public socket:SocketService, private storage: Storage, public alertController: AlertController, private router: Router) { 
-    this.storage.get('chatroom-user-token').then((val) => {
-      if(val){
-        this.router.navigateByUrl('home');
-      }
-    });
+  backButtonSubscription: any;
+  constructor(public socket:SocketService, private storage: Storage, public platform: Platform, public alertController: AlertController, private router: Router) {   
     this.socket.io.on('connect_error',()=> {
       if(!this.connect_error){
         this.presentAlert('Message','An error occurred while trying to establish a connection!<br>Please check your internet connection or restart app again');
         this.connect_error = true;
       }
-   });
+    });
+    this.socket.io.on('reconnect', (attemptNumber) => {
+      this.connect_error = false;
+    });
+  }
+
+  ionViewDidEnter(){
+    this.backButtonSubscription = this.platform.backButton.subscribe(async () => {
+      navigator['app'].exitApp();
+    }); 
+  }
+
+  ionViewDidLeave() {
+    this.backButtonSubscription.unsubscribe();
   }
 
   async presentAlert(header, message) {
@@ -52,7 +61,7 @@ export class LoginPage{
           setTimeout(()=>{
             this.email = '';
             this.password = '';
-            this.router.navigateByUrl('home');
+            this.router.navigateByUrl('home', { replaceUrl: true });
           },500);
         }
         else{

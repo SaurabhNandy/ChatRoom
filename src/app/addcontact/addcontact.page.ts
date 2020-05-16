@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { AlertController, ToastController, ModalController } from '@ionic/angular';
+import { AlertController, ToastController, ModalController, NavParams } from '@ionic/angular';
 import { SocketService } from '../socket.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
+import { VirtualTimeScheduler } from 'rxjs';
 
 @Component({
   selector: 'app-addcontact',
@@ -13,7 +14,11 @@ export class AddcontactPage {
   contact_nickname = '';
   contact_email = '';
   new_contact_list = [];
-  constructor(public socket: SocketService, public alertController: AlertController, public toastController: ToastController, public modalController: ModalController, private router: Router) { }
+  constructor(public socket: SocketService, navParams: NavParams, public alertController: AlertController, public toastController: ToastController, public modalController: ModalController, private router: Router) {
+    if(navParams.get('email')){
+      this.contact_email = navParams.get('email');
+    }
+  }
 
   async presentAlert(header, message) {
     const alert = await this.alertController.create({
@@ -47,6 +52,7 @@ export class AddcontactPage {
           if(data.status){
             this.socket.contacts.push(data.value);
             this.new_contact_list.push(data.value);
+            this.socket.refreshRecentsSocket();
             this.presentToast('User added to contact');
           }
           else{
@@ -60,9 +66,8 @@ export class AddcontactPage {
     }
   }
   
-  gotoChat(email, name, avatar){
+  gotoChat(){
     this.dismissModal();
-    this.router.navigate(['/chat'], { queryParams: {email: email, name: name, avatar: avatar}});
   }
 
   dismissModal(){

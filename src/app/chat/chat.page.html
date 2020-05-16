@@ -1,24 +1,30 @@
 <ion-header [translucent]="true">
   <ion-toolbar class="new-background-color">
     <ion-buttons slot="start">
-      <ion-back-button></ion-back-button>
+      <ion-back-button defaultHref="home"></ion-back-button>
     </ion-buttons>
-    <ion-title>
-      {{name}}
+    <img src="{{avatar}}" width="40px" height="40px" class="avatar-toolbar" slot="start"/>
+    <ion-title tooltip="{{name}}<br>({{receiver}})" content-type="html" show-delay="50" offset="2" max-width="400" trigger="click" hideDelayAfterClick="3000" displayTouchscreen="true">
+      {{name}}<br><span>{{status}}</span>
     </ion-title>
-    <ion-buttons slot="end">
-      <ion-button>
+    <ion-buttons *ngIf="new_contact" slot="end">
+      <ion-button (click)="presentPopover($event)">
         <ion-icon name="ellipsis-vertical"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+  
 </ion-header>
 
-<ion-content padding [fullscreen]="true" overflow-scroll=true>
+<ion-content padding [fullscreen]="true" overflow-scroll="true">
   <div class="message-container">
-    <div *ngFor="let message of chats" class="{{message.styleClass}}">
-      <h5 class="hour">{{message?.time | date: "shortTime"}}</h5>
-      <p class="{{message.styleClass}}-bubble">{{message.msgStr}}</p>
+    <h3 *ngIf="chats.length>0"><span>{{chats[0]?.time | date: "mediumDate"}}</span></h3>
+    <div *ngFor="let message of chats; let i = index">
+      <h3 *ngIf="i>0 && compareDates(chats[i-1].time, chats[i].time)"><span>{{chats[i]?.time | date: "mediumDate"}}</span></h3>
+      <div class="{{message.styleClass}}" id="{{message.time}}">
+        <h5 class="hour">{{message?.time | date: "shortTime"}}</h5>
+        <p class="{{message.styleClass}}-bubble">{{message.msgStr}}</p>
+      </div>
     </div>
   </div>
 </ion-content>
@@ -26,7 +32,7 @@
 
 <ion-footer>
   <ion-item>
-    <ion-input type="text" [(ngModel)]="chat_input" placeholder="Type a message.."></ion-input>
-    <ion-icon name="send" (click)="send(chat_input)" (mousedown)="$event.preventDefault()" item-right></ion-icon>
+    <ion-textarea type="text" rows="1" [(ngModel)]="chat_input" placeholder="Type a message.."></ion-textarea>
+    <ion-icon name="send" (click)="send(chat_input)" (mousedown)="$event.preventDefault()"  ></ion-icon>
   </ion-item>
 </ion-footer>
